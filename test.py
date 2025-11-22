@@ -2,124 +2,178 @@
 import requests
 import json
 from datetime import datetime
-import base64
 import os
 
 st.set_page_config(page_title="Vishesh AI Chatbot", page_icon="", layout="wide", initial_sidebar_state="expanded")
 
-# Clean modern dark theme
 st.markdown("""
 <style>
     .stApp {
-        background-color: #1a1a1a;
+        background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
     }
     
     .main-header {
-        background: #2d2d2d;
-        padding: 30px;
-        border-radius: 15px;
+        background: linear-gradient(135deg, #2d2d2d 0%, #252525 100%);
+        padding: 35px;
+        border-radius: 20px;
         text-align: center;
-        margin-bottom: 25px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        margin-bottom: 30px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        border: 1px solid #333;
     }
     
     .main-header h1 {
         color: #00FF00;
-        font-size: 2.5em;
+        font-size: 2.8em;
         margin: 0;
+        font-weight: 600;
+        letter-spacing: -1px;
     }
     
     .main-header p {
-        color: #999;
-        margin-top: 10px;
+        color: #aaa;
+        margin-top: 12px;
+        font-size: 1.1em;
     }
     
     .chat-container {
-        background: #242424;
-        padding: 25px;
-        border-radius: 15px;
+        background: #1f1f1f;
+        padding: 30px;
+        border-radius: 20px;
         min-height: 500px;
-        max-height: 600px;
+        max-height: 650px;
         overflow-y: auto;
+        box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
     }
     
     .user-msg {
-        background: #333333;
-        padding: 15px 20px;
-        border-radius: 15px;
-        margin: 10px 0;
+        background: linear-gradient(135deg, #2a4a2a 0%, #1e3a1e 100%);
+        padding: 18px 24px;
+        border-radius: 18px;
+        margin: 12px 0;
         color: #00FF00;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        box-shadow: 0 4px 12px rgba(0,255,0,0.15);
+        animation: slideInRight 0.4s ease-out;
+        border-left: 3px solid #00FF00;
     }
     
     .ai-msg {
-        background: #444444;
-        padding: 15px 20px;
-        border-radius: 15px;
-        margin: 10px 0;
-        color: #ffffff;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        background: linear-gradient(135deg, #3a3a3a 0%, #2d2d2d 100%);
+        padding: 18px 24px;
+        border-radius: 18px;
+        margin: 12px 0;
+        color: #f0f0f0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        animation: slideInLeft 0.4s ease-out;
+        border-left: 3px solid #00DD00;
     }
     
     .user-msg strong, .ai-msg strong {
         display: block;
-        margin-bottom: 8px;
-        font-size: 1.05em;
+        margin-bottom: 10px;
+        font-size: 1.1em;
+        opacity: 0.95;
     }
     
     .timestamp {
-        font-size: 0.8em;
-        opacity: 0.6;
-        margin-top: 5px;
+        font-size: 0.75em;
+        opacity: 0.5;
+        margin-top: 8px;
+    }
+    
+    @keyframes slideInRight {
+        from {
+            transform: translateX(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideInLeft {
+        from {
+            transform: translateX(-20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
     
     section[data-testid="stSidebar"] {
-        background: #242424;
+        background: linear-gradient(180deg, #1f1f1f 0%, #1a1a1a 100%);
+        border-right: 1px solid #333;
+    }
+    
+    section[data-testid="stSidebar"] h1 {
+        color: #00FF00;
     }
     
     section[data-testid="stSidebar"] .stMetric {
-        background: #2d2d2d;
-        padding: 15px;
-        border-radius: 10px;
-        margin: 10px 0;
-    }
-    
-    .stButton button {
-        background: #00FF00;
-        color: #000000;
-        border: none;
-        border-radius: 10px;
-        padding: 12px 24px;
-        font-weight: bold;
+        background: linear-gradient(135deg, #2d2d2d 0%, #252525 100%);
+        padding: 18px;
+        border-radius: 12px;
+        margin: 12px 0;
+        border: 1px solid #333;
         transition: all 0.3s ease;
     }
     
-    .stButton button:hover {
-        background: #00DD00;
+    section[data-testid="stSidebar"] .stMetric:hover {
         transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0,255,0,0.1);
+    }
+    
+    .stButton button {
+        background: linear-gradient(135deg, #00FF00 0%, #00DD00 100%);
+        color: #000000;
+        border: none;
+        border-radius: 12px;
+        padding: 14px 28px;
+        font-weight: 700;
+        font-size: 1em;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,255,0,0.3);
+    }
+    
+    .stButton button:hover {
+        background: #00FF00;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,255,0,0.4);
     }
     
     .welcome {
         text-align: center;
-        padding: 80px 20px;
+        padding: 100px 20px;
         color: #999;
     }
     
     .welcome h2 {
         color: #00FF00;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
+        font-size: 2.2em;
+    }
+    
+    .welcome p {
+        font-size: 1.15em;
+        line-height: 1.8;
     }
     
     .footer {
         text-align: center;
-        padding: 20px;
+        padding: 25px;
         color: #666;
-        margin-top: 30px;
+        margin-top: 40px;
+        border-top: 1px solid #333;
     }
     
     .footer a {
         color: #00FF00;
         text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
     }
     
     .footer a:hover {
@@ -127,24 +181,29 @@ st.markdown("""
     }
     
     ::-webkit-scrollbar {
-        width: 8px;
+        width: 10px;
     }
     
     ::-webkit-scrollbar-track {
         background: #1a1a1a;
+        border-radius: 5px;
     }
     
     ::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #00FF00 0%, #00DD00 100%);
+        border-radius: 5px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
         background: #00FF00;
-        border-radius: 4px;
     }
 </style>
 """, unsafe_allow_html=True)
 
 st.markdown("""
 <div class="main-header">
-    <h1> Vishesh GPT Chatbot</h1>
-    <p>AI Assistant powered by Gemini 2.5 Flash</p>
+    <h1> Vishesh AI Chatbot</h1>
+    <p>Powered by Gemini 2.5 Flash  Smart  Fast  Reliable</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -159,13 +218,13 @@ def get_ai_response(messages):
     
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
     
-    context = "You are an intelligent AI assistant created by Vishesh Sanghvi. You remember the conversation and provide helpful, detailed responses.\n\n"
+    context = "You are an intelligent AI assistant created by Vishesh Sanghvi. You provide helpful, accurate, and friendly responses. Keep conversations natural and engaging.\n\n"
     for msg in messages[-20:]:
         context += f"{msg['role'].title()}: {msg['content']}\n"
     
     payload = {
         "contents": [{"parts": [{"text": context}]}],
-        "generationConfig": {"temperature": 0.9, "maxOutputTokens": 4096}
+        "generationConfig": {"temperature": 0.8, "maxOutputTokens": 4096}
     }
     
     try:
@@ -173,7 +232,7 @@ def get_ai_response(messages):
         if resp.status_code == 200:
             return resp.json()['candidates'][0]['content']['parts'][0]['text']
         else:
-            return f" Error {resp.status_code}: {resp.text[:100]}"
+            return f" Error {resp.status_code}: Unable to get response"
     except Exception as e:
         return f" Error: {str(e)}"
 
@@ -189,15 +248,19 @@ with st.sidebar:
         has_key = bool(os.environ.get("GEMINI_API_KEY"))
     
     if has_key:
-        st.success(" API Key OK")
+        st.success(" Connected")
     else:
         st.error(" No API Key")
     
     st.divider()
     
-    st.metric("Messages", len(st.session_state.messages))
-    st.metric("Memory", f"{min(len(st.session_state.messages), 20)}/20")
-    st.metric("Model", "Gemini 2.5 Flash")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("Messages", len(st.session_state.messages))
+    with col2:
+        st.metric("Memory", f"{min(len(st.session_state.messages), 20)}/20")
+    
+    st.metric("AI Model", "Gemini 2.5 Flash")
     
     st.divider()
     
@@ -207,7 +270,7 @@ with st.sidebar:
     
     st.divider()
     
-    st.markdown("**Created by:**")
+    st.markdown("** Created by:**")
     st.markdown("[Vishesh Sanghvi](https://www.linkedin.com/in/vishesh-sanghvi-96b16a237/)")
 
 st.markdown('<div class="chat-container">', unsafe_allow_html=True)
@@ -215,9 +278,10 @@ st.markdown('<div class="chat-container">', unsafe_allow_html=True)
 if not st.session_state.messages:
     st.markdown("""
     <div class="welcome">
-        <h2> Welcome!</h2>
-        <p>Start chatting by typing a message below.</p>
-        <p>I remember our conversation and can help with anything!</p>
+        <h2> Welcome to Vishesh AI!</h2>
+        <p>I'm here to help you with anything you need.</p>
+        <p>Ask me questions, request explanations, or just chat!</p>
+        <p> I remember our conversation for context-aware responses.</p>
     </div>
     """, unsafe_allow_html=True)
 
