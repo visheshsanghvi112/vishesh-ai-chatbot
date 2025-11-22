@@ -1,0 +1,20 @@
+﻿# Streamlit secrets - NEVER commit this!
+.streamlit/secrets.toml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+*.egg-info/
+
+# Backup files
+*.backup
+test_content.txt
+
+# OS
+.DS_Store
+Thumbs.db

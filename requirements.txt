@@ -1,8 +1,5 @@
-streamlit
+﻿streamlit
 requests
 pandas
 plotly
 numpy
-pytesseract
-pymupdf
-pillow
