@@ -17,7 +17,7 @@ st.markdown("""
         padding: 35px;
         border-radius: 20px;
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 15px;
         box-shadow: 0 8px 20px rgba(0,0,0,0.4);
         border: 1px solid #3a3a3a;
     }
@@ -39,8 +39,8 @@ st.markdown("""
         background: #1f1f1f;
         padding: 30px;
         border-radius: 20px;
-        min-height: 400px;
-        max-height: 650px;
+        min-height: 150px;
+        max-height: 500px;
         overflow-y: auto;
         box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
     }
@@ -322,4 +322,5 @@ st.markdown("""
     <p>Powered by Google Gemini 2.5 Flash</p>
 </div>
 """, unsafe_allow_html=True)
+
 
