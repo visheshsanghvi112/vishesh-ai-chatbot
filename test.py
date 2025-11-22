@@ -9,7 +9,7 @@ st.set_page_config(page_title="Vishesh AI Chatbot", page_icon="", layout="wide",
 st.markdown("""
 <style>
     .stApp {
-        background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+        background: linear-gradient(135deg, #1e1e1e 0%, #121212 100%);
     }
     
     .main-header {
@@ -19,15 +19,14 @@ st.markdown("""
         text-align: center;
         margin-bottom: 30px;
         box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-        border: 1px solid #333;
+        border: 1px solid #3a3a3a;
     }
     
     .main-header h1 {
-        color: #00FF00;
+        color: #ffffff;
         font-size: 2.8em;
         margin: 0;
         font-weight: 600;
-        letter-spacing: -1px;
     }
     
     .main-header p {
@@ -47,14 +46,14 @@ st.markdown("""
     }
     
     .user-msg {
-        background: linear-gradient(135deg, #2a4a2a 0%, #1e3a1e 100%);
+        background: linear-gradient(135deg, #2d5a9e 0%, #1e4178 100%);
         padding: 18px 24px;
         border-radius: 18px;
         margin: 12px 0;
-        color: #00FF00;
-        box-shadow: 0 4px 12px rgba(0,255,0,0.15);
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(45,90,158,0.25);
         animation: slideInRight 0.4s ease-out;
-        border-left: 3px solid #00FF00;
+        border-left: 3px solid #4a90e2;
     }
     
     .ai-msg {
@@ -65,7 +64,7 @@ st.markdown("""
         color: #f0f0f0;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         animation: slideInLeft 0.4s ease-out;
-        border-left: 3px solid #00DD00;
+        border-left: 3px solid #666;
     }
     
     .user-msg strong, .ai-msg strong {
@@ -105,11 +104,11 @@ st.markdown("""
     
     section[data-testid="stSidebar"] {
         background: linear-gradient(180deg, #1f1f1f 0%, #1a1a1a 100%);
-        border-right: 1px solid #333;
+        border-right: 1px solid #3a3a3a;
     }
     
     section[data-testid="stSidebar"] h1 {
-        color: #00FF00;
+        color: #ffffff;
     }
     
     section[data-testid="stSidebar"] .stMetric {
@@ -117,31 +116,31 @@ st.markdown("""
         padding: 18px;
         border-radius: 12px;
         margin: 12px 0;
-        border: 1px solid #333;
+        border: 1px solid #3a3a3a;
         transition: all 0.3s ease;
     }
     
     section[data-testid="stSidebar"] .stMetric:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(0,255,0,0.1);
+        box-shadow: 0 6px 15px rgba(74,144,226,0.15);
     }
     
     .stButton button {
-        background: linear-gradient(135deg, #00FF00 0%, #00DD00 100%);
-        color: #000000;
+        background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+        color: #ffffff;
         border: none;
         border-radius: 12px;
         padding: 14px 28px;
         font-weight: 700;
         font-size: 1em;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0,255,0,0.3);
+        box-shadow: 0 4px 15px rgba(74,144,226,0.3);
     }
     
     .stButton button:hover {
-        background: #00FF00;
+        background: #4a90e2;
         transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(0,255,0,0.4);
+        box-shadow: 0 6px 20px rgba(74,144,226,0.4);
     }
     
     .welcome {
@@ -151,7 +150,7 @@ st.markdown("""
     }
     
     .welcome h2 {
-        color: #00FF00;
+        color: #ffffff;
         margin-bottom: 25px;
         font-size: 2.2em;
     }
@@ -166,18 +165,18 @@ st.markdown("""
         padding: 25px;
         color: #666;
         margin-top: 40px;
-        border-top: 1px solid #333;
+        border-top: 1px solid #3a3a3a;
     }
     
     .footer a {
-        color: #00FF00;
+        color: #4a90e2;
         text-decoration: none;
         font-weight: 600;
         transition: all 0.3s ease;
     }
     
     .footer a:hover {
-        color: #00DD00;
+        color: #5ba3f5;
     }
     
     ::-webkit-scrollbar {
@@ -190,12 +189,12 @@ st.markdown("""
     }
     
     ::-webkit-scrollbar-thumb {
-        background: linear-gradient(180deg, #00FF00 0%, #00DD00 100%);
+        background: linear-gradient(180deg, #4a90e2 0%, #357abd 100%);
         border-radius: 5px;
     }
     
     ::-webkit-scrollbar-thumb:hover {
-        background: #00FF00;
+        background: #4a90e2;
     }
 </style>
 """, unsafe_allow_html=True)
