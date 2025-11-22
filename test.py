@@ -23,7 +23,7 @@ def get_ai_response(messages):
     if not api_key:
         return " API Key not configured. Add GEMINI_API_KEY to Streamlit secrets."
     
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-latest:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
     
     context = "You are an intelligent AI assistant created by Vishesh Sanghvi. You remember the conversation and provide helpful, detailed responses.\n\n"
     for msg in messages[-20:]:
@@ -59,6 +59,8 @@ with st.sidebar:
         st.error(" No API Key")
     
     st.metric("Messages", len(st.session_state.messages))
+    st.metric("Model", "Gemini 2.5 Flash")
+    
     if st.button(" Clear Chat"):
         st.session_state.messages = []
         st.rerun()
@@ -75,4 +77,4 @@ if prompt := st.chat_input("Ask me anything..."):
     st.session_state.messages.append({"role": "assistant", "content": response})
     st.rerun()
 
-st.markdown("---\n<center>Created by Vishesh Sanghvi | Powered by Gemini 2.5 Flash</center>", unsafe_allow_html=True)
+st.markdown("---\n<center>Created with  by Vishesh Sanghvi | Powered by Gemini 2.5 Flash</center>", unsafe_allow_html=True)
