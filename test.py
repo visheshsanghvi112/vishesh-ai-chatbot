@@ -35,15 +35,7 @@ st.markdown("""
         font-size: 1.1em;
     }
     
-    .chat-container {
-        background: #1f1f1f;
-        padding: 30px;
-        border-radius: 20px;
-        min-height: 150px;
-        max-height: 500px;
-        overflow-y: auto;
-        box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
-    }
+    
     
     .user-msg {
         background: linear-gradient(135deg, #2d5a9e 0%, #1e4178 100%);
@@ -272,7 +264,7 @@ with st.sidebar:
     st.markdown("** Created by:**")
     st.markdown("[Vishesh Sanghvi](https://www.linkedin.com/in/vishesh-sanghvi-96b16a237/)")
 
-st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+
 
 if not st.session_state.messages:
     st.markdown("""
@@ -297,7 +289,7 @@ for msg in st.session_state.messages:
     </div>
     """, unsafe_allow_html=True)
 
-st.markdown('</div>', unsafe_allow_html=True)
+
 
 if prompt := st.chat_input("Type your message here..."):
     st.session_state.messages.append({
@@ -322,5 +314,6 @@ st.markdown("""
     <p>Powered by Google Gemini 2.5 Flash</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 
