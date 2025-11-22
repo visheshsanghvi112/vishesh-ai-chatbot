@@ -39,7 +39,7 @@ st.markdown("""
         background: #1f1f1f;
         padding: 30px;
         border-radius: 20px;
-        min-height: 500px;
+        min-height: 400px;
         max-height: 650px;
         overflow-y: auto;
         box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
@@ -145,7 +145,7 @@ st.markdown("""
     
     .welcome {
         text-align: center;
-        padding: 100px 20px;
+        padding: 40px 20px;
         color: #999;
     }
     
@@ -322,3 +322,4 @@ st.markdown("""
     <p>Powered by Google Gemini 2.5 Flash</p>
 </div>
 """, unsafe_allow_html=True)
+
