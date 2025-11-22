@@ -18,7 +18,7 @@ st.set_page_config(
 )
 
 # ---- CUSTOM CSS ----
-st.markdown(""
+st.markdown("""
     <style>
     body { background-color: #000000; color: #ffffff; font-family: 'Courier New', monospace; }
     .header { background-color: #1e1e1e; color: #00FF00; padding: 20px; border-radius: 10px; text-align: center; font-size: 30px; font-weight: bold; box-shadow: 0px 4px 10px rgba(0, 255, 0, 0.4); }
@@ -29,7 +29,7 @@ st.markdown(""
     .footer { text-align: center; font-size: 14px; color: #999999; margin-top: 20px; }
     .footer a { color: #00FF00; text-decoration: none; }
     </style>
-"", unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 st.markdown('<div class="header"> AI Milestone - Vishesh GPT Chatbot</div>', unsafe_allow_html=True)
 
@@ -49,7 +49,7 @@ def get_response_from_api(messages):
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
     headers = {'Content-Type': 'application/json'}
     
-    system_prompt = ""You are an intelligent AI assistant similar to ChatGPT, created by Vishesh Sanghvi. You maintain full conversation context, provide detailed responses, and engage naturally. Remember all previous messages.""
+    system_prompt = """You are an intelligent AI assistant similar to ChatGPT, created by Vishesh Sanghvi. You maintain full conversation context, provide detailed responses, and engage naturally. Remember all previous messages."""
     
     conversation_text = system_prompt + "\n\n"
     recent_messages = messages[-30:] if len(messages) > 30 else messages
@@ -80,7 +80,7 @@ def get_response_from_api(messages):
 def handle_commands(user_input):
     cmd = user_input.lower().strip()
     if cmd in ["/help", "help"]:
-        return "**Commands:** /help, /clear, /memory, /date, /creator, /analyze, /export"
+        return "**Commands:** /help, /clear, /memory, /date, /creator, /export"
     elif cmd in ["/clear", "clear"]:
         st.session_state.messages = []
         return " Chat cleared!"
