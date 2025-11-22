@@ -2,174 +2,150 @@
 import requests
 import json
 from datetime import datetime
+import base64
 import os
 
-st.set_page_config(page_title="Vishesh AI", page_icon="", layout="wide")
+st.set_page_config(page_title="Vishesh AI Chatbot", page_icon="", layout="wide", initial_sidebar_state="expanded")
 
-# ChatGPT-style CSS
+# Clean modern dark theme
 st.markdown("""
 <style>
-    /* Hide Streamlit branding */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    
-    /* Main container */
     .stApp {
-        background-color: #343541;
+        background-color: #1a1a1a;
     }
     
-    .main .block-container {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-        max-width: 100%;
+    .main-header {
+        background: #2d2d2d;
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }
     
-    /* Chat messages */
-    .chat-message {
-        padding: 1.5rem;
-        margin-bottom: 0;
-        display: flex;
-        gap: 1.5rem;
+    .main-header h1 {
+        color: #00FF00;
+        font-size: 2.5em;
+        margin: 0;
     }
     
-    .chat-message.user {
-        background-color: #343541;
+    .main-header p {
+        color: #999;
+        margin-top: 10px;
     }
     
-    .chat-message.assistant {
-        background-color: #444654;
+    .chat-container {
+        background: #242424;
+        padding: 25px;
+        border-radius: 15px;
+        min-height: 500px;
+        max-height: 600px;
+        overflow-y: auto;
     }
     
-    .chat-message .avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        flex-shrink: 0;
+    .user-msg {
+        background: #333333;
+        padding: 15px 20px;
+        border-radius: 15px;
+        margin: 10px 0;
+        color: #00FF00;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
     
-    .chat-message.user .avatar {
-        background-color: #5436DA;
+    .ai-msg {
+        background: #444444;
+        padding: 15px 20px;
+        border-radius: 15px;
+        margin: 10px 0;
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
     
-    .chat-message.assistant .avatar {
-        background-color: #19C37D;
+    .user-msg strong, .ai-msg strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 1.05em;
     }
     
-    .chat-message .message {
-        color: #ECECF1;
-        font-size: 1rem;
-        line-height: 1.7;
-        flex: 1;
+    .timestamp {
+        font-size: 0.8em;
+        opacity: 0.6;
+        margin-top: 5px;
     }
     
-    /* Sidebar */
     section[data-testid="stSidebar"] {
-        background-color: #202123;
-        border-right: 1px solid #4d4d4f;
+        background: #242424;
     }
     
-    section[data-testid="stSidebar"] > div {
-        padding-top: 2rem;
+    section[data-testid="stSidebar"] .stMetric {
+        background: #2d2d2d;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 10px 0;
     }
     
-    section[data-testid="stSidebar"] h1,
-    section[data-testid="stSidebar"] h2,
-    section[data-testid="stSidebar"] h3 {
-        color: #ECECF1;
-    }
-    
-    section[data-testid="stSidebar"] p,
-    section[data-testid="stSidebar"] label {
-        color: #C5C5D2;
-    }
-    
-    /* Buttons */
     .stButton button {
-        background-color: transparent;
-        border: 1px solid #565869;
-        color: #ECECF1;
-        border-radius: 6px;
-        padding: 0.75rem 1rem;
-        width: 100%;
-        transition: all 0.2s;
+        background: #00FF00;
+        color: #000000;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-weight: bold;
+        transition: all 0.3s ease;
     }
     
     .stButton button:hover {
-        background-color: #2A2B32;
+        background: #00DD00;
+        transform: translateY(-2px);
     }
     
-    /* Chat input */
-    .stChatInput {
-        position: fixed;
-        bottom: 0;
-        left: 250px;
-        right: 0;
-        background: linear-gradient(180deg, transparent, #343541 20%);
-        padding: 2rem;
+    .welcome {
+        text-align: center;
+        padding: 80px 20px;
+        color: #999;
     }
     
-    .stChatInput textarea {
-        background-color: #40414F;
-        border: 1px solid #565869;
-        color: #ECECF1;
-        border-radius: 8px;
-        padding: 1rem;
-        font-size: 1rem;
+    .welcome h2 {
+        color: #00FF00;
+        margin-bottom: 20px;
     }
     
-    .stChatInput textarea:focus {
-        border-color: #19C37D;
-        outline: none;
+    .footer {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+        margin-top: 30px;
     }
     
-    /* Metrics */
-    section[data-testid="stSidebar"] .stMetric {
-        background-color: #2A2B32;
-        padding: 0.75rem;
-        border-radius: 6px;
-        border: 1px solid #4d4d4f;
+    .footer a {
+        color: #00FF00;
+        text-decoration: none;
     }
     
-    section[data-testid="stSidebar"] .stMetric label {
-        color: #8E8EA0;
-        font-size: 0.875rem;
+    .footer a:hover {
+        color: #00DD00;
     }
     
-    section[data-testid="stSidebar"] .stMetric [data-testid="stMetricValue"] {
-        color: #ECECF1;
+    ::-webkit-scrollbar {
+        width: 8px;
     }
     
-    /* Welcome screen */
-    .welcome-screen {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 60vh;
-        color: #ECECF1;
+    ::-webkit-scrollbar-track {
+        background: #1a1a1a;
     }
     
-    .welcome-screen h1 {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-    }
-    
-    .welcome-screen p {
-        color: #8E8EA0;
-        font-size: 1.1rem;
-    }
-    
-    /* Divider */
-    hr {
-        border-color: #4d4d4f;
-        margin: 1.5rem 0;
+    ::-webkit-scrollbar-thumb {
+        background: #00FF00;
+        border-radius: 4px;
     }
 </style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="main-header">
+    <h1> Vishesh GPT Chatbot</h1>
+    <p>AI Assistant powered by Gemini 2.5 Flash</p>
+</div>
 """, unsafe_allow_html=True)
 
 def get_ai_response(messages):
@@ -179,17 +155,17 @@ def get_ai_response(messages):
         api_key = os.environ.get("GEMINI_API_KEY")
     
     if not api_key:
-        return " API Key not configured. Please add GEMINI_API_KEY to Streamlit secrets."
+        return " API Key not configured. Add GEMINI_API_KEY to Streamlit secrets."
     
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
     
-    context = "You are a helpful AI assistant created by Vishesh Sanghvi. Provide clear, accurate, and conversational responses.\n\n"
+    context = "You are an intelligent AI assistant created by Vishesh Sanghvi. You remember the conversation and provide helpful, detailed responses.\n\n"
     for msg in messages[-20:]:
         context += f"{msg['role'].title()}: {msg['content']}\n"
     
     payload = {
         "contents": [{"parts": [{"text": context}]}],
-        "generationConfig": {"temperature": 0.7, "maxOutputTokens": 4096}
+        "generationConfig": {"temperature": 0.9, "maxOutputTokens": 4096}
     }
     
     try:
@@ -197,24 +173,15 @@ def get_ai_response(messages):
         if resp.status_code == 200:
             return resp.json()['candidates'][0]['content']['parts'][0]['text']
         else:
-            return f"Error: Unable to get response (Status {resp.status_code})"
+            return f" Error {resp.status_code}: {resp.text[:100]}"
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f" Error: {str(e)}"
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Sidebar
 with st.sidebar:
-    st.markdown("### Vishesh AI")
-    
-    if st.button(" New chat", use_container_width=True):
-        st.session_state.messages = []
-        st.rerun()
-    
-    st.markdown("---")
-    
-    st.markdown("### Status")
+    st.title(" Settings")
     
     try:
         has_key = bool(st.secrets.get("GEMINI_API_KEY"))
@@ -222,66 +189,73 @@ with st.sidebar:
         has_key = bool(os.environ.get("GEMINI_API_KEY"))
     
     if has_key:
-        st.success("Connected")
+        st.success(" API Key OK")
     else:
-        st.error("No API Key")
+        st.error(" No API Key")
     
-    col1, col2 = st.columns(2)
-    with col1:
-        st.metric("Messages", len(st.session_state.messages))
-    with col2:
-        st.metric("Model", "2.5")
+    st.divider()
     
-    st.markdown("---")
+    st.metric("Messages", len(st.session_state.messages))
+    st.metric("Memory", f"{min(len(st.session_state.messages), 20)}/20")
+    st.metric("Model", "Gemini 2.5 Flash")
     
-    st.markdown("### About")
-    st.markdown("""
-    **Vishesh AI Assistant**
+    st.divider()
     
-    Powered by Google Gemini 2.5 Flash
+    if st.button(" Clear Chat", use_container_width=True):
+        st.session_state.messages = []
+        st.rerun()
     
-    Created by [Vishesh Sanghvi](https://www.linkedin.com/in/vishesh-sanghvi-96b16a237/)
-    """)
+    st.divider()
+    
+    st.markdown("**Created by:**")
+    st.markdown("[Vishesh Sanghvi](https://www.linkedin.com/in/vishesh-sanghvi-96b16a237/)")
 
-# Main chat area
+st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+
 if not st.session_state.messages:
     st.markdown("""
-    <div class="welcome-screen">
-        <h1> Vishesh AI</h1>
-        <p>How can I help you today?</p>
+    <div class="welcome">
+        <h2> Welcome!</h2>
+        <p>Start chatting by typing a message below.</p>
+        <p>I remember our conversation and can help with anything!</p>
     </div>
     """, unsafe_allow_html=True)
 
-# Display messages
-for message in st.session_state.messages:
-    role = message["role"]
-    content = message["content"]
+for msg in st.session_state.messages:
+    css_class = "user-msg" if msg["role"] == "user" else "ai-msg"
+    icon = "" if msg["role"] == "user" else ""
+    timestamp = msg.get("timestamp", datetime.now()).strftime("%H:%M")
     
-    if role == "user":
-        st.markdown(f"""
-        <div class="chat-message user">
-            <div class="avatar"></div>
-            <div class="message">{content}</div>
-        </div>
-        """, unsafe_allow_html=True)
-    else:
-        st.markdown(f"""
-        <div class="chat-message assistant">
-            <div class="avatar"></div>
-            <div class="message">{content}</div>
-        </div>
-        """, unsafe_allow_html=True)
+    st.markdown(f"""
+    <div class="{css_class}">
+        <strong>{icon} {msg["role"].title()}</strong>
+        <div>{msg["content"]}</div>
+        <div class="timestamp">{timestamp}</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-# Chat input
-if prompt := st.chat_input("Message Vishesh AI..."):
-    # Add user message
-    st.session_state.messages.append({"role": "user", "content": prompt})
+st.markdown('</div>', unsafe_allow_html=True)
+
+if prompt := st.chat_input("Type your message here..."):
+    st.session_state.messages.append({
+        "role": "user", 
+        "content": prompt,
+        "timestamp": datetime.now()
+    })
     
-    # Get AI response
-    with st.spinner(""):
+    with st.spinner(" Thinking..."):
         response = get_ai_response(st.session_state.messages)
     
-    # Add assistant message
-    st.session_state.messages.append({"role": "assistant", "content": response})
-    
+    st.session_state.messages.append({
+        "role": "assistant", 
+        "content": response,
+        "timestamp": datetime.now()
+    })
     st.rerun()
+
+st.markdown("""
+<div class="footer">
+    <p>Created with  by <a href="https://www.linkedin.com/in/vishesh-sanghvi-96b16a237/" target="_blank">Vishesh Sanghvi</a></p>
+    <p>Powered by Google Gemini 2.5 Flash</p>
+</div>
+""", unsafe_allow_html=True)
